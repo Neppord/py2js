@@ -10,13 +10,13 @@ class LibraryStream(object):
   def read(self):
     return self.__buffer.popleft()
 
-def lookup(name):
+def lookup(node):
 	return _lib[node]
 
 _lib={
-      "ADD_MODUEL":"$sysmodules = [%(module_name)%]"
-      "MODUEL_START":"var %(module_name)s = {",
+      "ADD_MODULE":"$sysmodules = [%(module_name)s]",
+      "MODULE_START":"var %(module_name)s = {",
       "MODULE_END":"}",
-      "DEBUG":"%(string)s",
+      "DEBUG":"/*COMPILER_DEBUG:%(string)s*/",
 			"PYTHON_ATTRIBUTE":"%(object)s.__getattr__(%(attribute)s)",
 		}
