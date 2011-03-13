@@ -1,30 +1,36 @@
-INDENT = 0
-DEDENT = 1
-class Traverser(object):
-  def __init__(self, lib, formater):
-    self.lib = lib
-    self.formater = formater
-  def run(self, node):
-    stack = [node]
-    env = {}
-    while stack:
-      node = stack.pop()
-      if isinstance(node, Token):
-        self.lib.write(node)
-        self.formater.write(self.lib.read())
-      elif node == INDENT:
-        self.formater.indent()
-      elif node == DEDENT:
-        self.formater.dedent()
-      elif node.__class__.__name__ == "Module":
-        stack.append(Token("ADD_MODULE", module_name="__main__"))
-        stack.append(Token("MODULE_END"))
-        stack.append(DEDENT)
-        stack.extend(node.body[::-1])
-        stack.append(INDENT)
-        stack.append(Token("MODULE_START", module_name="__main__"))
-      else:
-        stack.append(Token("DEBUG",string=repr(node)))
+import ast
+INDENT = 1
+DEDENT = -1
+class Traverser(ast.NodeTransformer):
+
+  def visit_Module(self, node):
+    return [
+        ("CREATE_MODULE", dict(module_name="__main__")),
+        ("ADD_MODULE", dict(module_name="__main__")),
+        ("MODULE_START", dict(module_name="__main__")),
+        INDENT,
+        ]+[x for x in (self.visit(stmt) for stmt in node.body) if x != None]+[
+        DEDENT,
+        ("MODULE_END",),
+        ]
+
+  def visit_FunctionDef(self, node):
+   return [
+        ("FUNCTION_DEFENITION_HEAD_START", dict(function_name=node.name)),
+        self.visit(node.args),
+        ("FUNCTION_DEFENITION_HEAD_END",),
+        INDENT,
+        ]+[stmt for stmt in (self.visit(stmt) for stmt in node.body) if stmt != None]+[
+        DEDENT,
+        ("FUNCTION_DEFENITION_END",),
+        ]+[decerator for decorator in (self.visit(decorator) for decorator in node.decorator_list) if decerator != None]
+
+  def generic_visit(self, node):
+    return ("DEBUG", dict(string=ast.dump(node)))
+      
+def debug(node):
+  import ast
+  return [Token("DEBUG",string=ast.dump(node))]
   
 class Token():
   def __init__(self, name, **k):
@@ -37,9 +43,7 @@ if __name__ == "__main__":
   import ast
   import formater
   import library
-  formater = formater.Formater()
-  lib = library.LibraryStream()
-  traverser = Traverser(lib, formater)
-  traverser.run(ast.parse("def helloworld():pass"))
-  print formater.read()
+  traverser = Traverser()
+  node = ast.parse("def helloworld():pass")
+  print traverser.visit(node)
 
