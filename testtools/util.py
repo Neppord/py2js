@@ -8,9 +8,17 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 import os
+import platform
 import subprocess
 import shlex
 import posixpath
+
+def run_cmd(cmd):
+    if platform.system() == "Windows":
+        return subprocess.call(shlex.split(cmd), shell = True)
+    else:
+        return subprocess.call([cmd], shell = True)
+
 
 def get_posix_path(path):
     """translates path to a posix path"""
@@ -43,7 +51,7 @@ def run_with_stdlib(file_path, file_name=None):
                   'js -f "py-builtins.js" '
                   '-f "%(js_path)s" > "%(js_out_path)s" 2> "%(js_error)s"'
                   )% self.templ
-            self.assertEqual(0, subprocess.call(shlex.split(cmd), shell = True))
+            self.assertEqual(0, run_cmd(cmd))
             self.reportProgres()
         def __str__(self):
             return "%(js_unix_path)s [1]: " % self.templ
@@ -76,7 +84,7 @@ def compile_file_test(file_path, file_name=None):
                 ) % self.templ,
               )
             for cmd in commands:
-                self.assertEqual(0, subprocess.call(shlex.split(cmd), shell = True))
+                self.assertEqual(0, run_cmd(cmd))
                 self.reportProgres()
         def __str__(self):
             return "%(py_unix_path)s [1]: " % self.templ
@@ -126,7 +134,7 @@ def compile_and_run_file_test(file_path, file_name=None):
                 javascript_command
                 )
             for cmd in commands:
-                self.assertEqual(0, subprocess.call(shlex.split(cmd), shell = True))
+                self.assertEqual(0, run_cmd(cmd))
                 self.reportProgres()
             self.assertEqual(
                 file(self.templ["py_out_path"]).readlines(),
