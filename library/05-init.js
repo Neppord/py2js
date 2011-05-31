@@ -13,7 +13,7 @@ py_builtins.__python3__ = false;
 /* JavaScript helper functions */
 
 function defined(obj) {
-    return typeof(obj) != 'undefined';
+    return !(obj === undefined);
 }
 
 function assert(cond, msg) {
