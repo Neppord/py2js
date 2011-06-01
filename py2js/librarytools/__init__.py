@@ -13,18 +13,22 @@ CONTAINS = "^contains:(.*)$"
 CONTAINS_FEATURE = "^contains_feature:(.*)$"
 REQUIRES_FEATURE = "^requires_feature:(.*)$"
 
+REQUIRES_ENTRY = 0
+REQUIRES_FEATURE_ENTRY = 1
+CONTAINS_ENTRY = 2
+CONTAINS_FEATURE_ENTRY = 3
+FILE_FOUND_ENTRY =4
+
 DB_FILE = "library.db"
 LIBRARY_DIRS = ["library"]
 
 CREATE_TABLE = (
     "CREATE TABLE dependencies (" 
     "file text, "
-    "requires text, "
-    "contains text, "
-    "requires_feature text,"
-    "contains_feature text)"
+    "argument text, "
+    "type int)"
     )
-INSERT = "INSERT INTO dependencies values (?, ?, ?, ?, ?)"
+INSERT = "INSERT INTO dependencies values (?, ?, ?)"
 
 def update_db():
     """
@@ -44,25 +48,54 @@ def update_db():
     # look for tags
     for js_file in js_files:
         contents = file(js_file, "rb").read()
-        requires = ",".join(re.findall(REQUIRES, contents))
-        contains = ",".join(re.findall(CONTAINS, contents))
-        requires_feature = ",".join(re.findall(REQUIRES_FEATURE, contents))
-        contains_feature = ",".join(re.findall(CONTAINS_FEATURE, contents))
+        cursor.execute(INSERT, (js_file, "", FILE_FOUND_ENTRY))
         # add information to DB_FILE
-        cursor.execute(
-                INSERT,
-                (
-                    js_file,
-                    requires,
-                    contains,
-                    requires_feature,
-                    contains_feature
-                )
-                )
+        for arg in re.findall(REQUIRES, contents, re.M):
+            cursor.execute(
+                    INSERT,
+                    (js_file, arg.strip(), REQUIRES_ENTRY)
+                    )
+        for arg in re.findall(CONTAINS, contents, re.M):
+            cursor.execute(
+                    INSERT,
+                    (js_file, arg.strip(), CONTAINS_ENTRY)
+                    )
+        for arg in re.findall(REQUIRES_FEATURE, contents, re.M):
+            cursor.execute(
+                    INSERT,
+                    (js_file, arg.strip(), REQUIRES_FEATURE_ENTRY)
+                    )
+        for arg in re.findall(CONTAINS_FEATURE, contents, re.M):
+            cursor.execute(
+                    INSERT,
+                    (js_file, arg.strip(), CONTAINS_FEATURE_ENTRY)
+                    )
+
     db.commit()
     cursor.close()
 
+def list_builtins():
+    """
+    Returns a list off all function that the librarytools have in its DB_FILE
+    """
+    db = sqlite3.connect(DB_FILE)
+    cursor = db.cursor()
 
+    cursor.execute(
+            (
+                "SELECT DISTINCT argument "
+                "FROM dependencies "
+                "WHERE type = ? "
+                "AND argument LIKE '\\_\\_builtin\\_\\_.%' ESCAPE '\\'"
+                ),
+            (CONTAINS_ENTRY,)
+            )
 
+    ret = cursor.fetchall()
+    db.commit()
+    cursor.close()
+    if ret:
+        return map(lambda name: ".".join(name[0].split(".")[1:]), ret)
+    else:
+        return []
 
-update_db()
