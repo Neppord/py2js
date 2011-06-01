@@ -46,10 +46,18 @@ function copy(iterator) {
     return items;
 }
 
+/*
+contains_feature: function
+ */
+
 var Function = function(func) {
     func.__call__ = func;
     return func;
 };
+
+/*
+require_feature: function
+ */
 
 var js = Function(function(obj) {
     /*

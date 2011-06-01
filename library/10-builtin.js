@@ -1,8 +1,18 @@
 /* Python built-in functions */
 
+/*
+requires_feature: function
+contains: __builtin__.hasattr
+ */
+
 var hasattr = Function(function(obj, name) {
     return defined(obj[name]);
 });
+
+/*
+requires_feature: function
+contains: __builtin__.getattr
+ */
 
 var getattr = Function(function(obj, name, value) {
     var _value = obj[name];
@@ -18,9 +28,19 @@ var getattr = Function(function(obj, name, value) {
     }
 });
 
+/*
+requires_feature: function
+contains: __builtin__.setattr
+ */
+
 var setattr = Function(function(obj, name, value) {
     obj[name] = value;
 });
+
+/*
+requires_feature: function
+contains: __builtin__.hash
+ */
 
 var hash = Function(function(obj) {
     if (hasattr(obj, '__hash__')) {
@@ -32,6 +52,11 @@ var hash = Function(function(obj) {
     }
 });
 
+/*
+requires_feature: function
+contains: __builtin__.len
+ */
+
 var len = Function(function(obj) {
     if (hasattr(obj, '__len__')) {
         return obj.__len__();
@@ -40,6 +65,11 @@ var len = Function(function(obj) {
     }
 });
 
+/*
+requires_feature: function
+contains: __builtin__.dir
+ */
+
 var dir = Function(function(obj) {
     var res = list.__call__();
     for (var i in obj) {
@@ -47,6 +77,11 @@ var dir = Function(function(obj) {
     }
     return res;
 });
+
+/*
+requires_feature: function
+contains: __builtin__.repr
+ */
 
 var repr = Function(function(obj) {
     if (!defined(obj)) {
@@ -61,6 +96,11 @@ var repr = Function(function(obj) {
         throw py_builtins.AttributeError.__call__('__repr__, __str__ or toString not found on ' + typeof(obj));
     }
 });
+
+/*
+requires_feature: function
+contains: __builtin__.range
+ */
 
 var range = Function(function(start, end, step) {
     start = js(start);
@@ -90,9 +130,19 @@ var range = Function(function(start, end, step) {
         return list.__call__(seq);
 });
 
+/*
+requires_feature: function
+contains: __builtin__.xrange
+ */
+
 var xrange = Function(function(start, end, step) {
     return iter.__call__(range(start, end, step));
 });
+
+/*
+requires_feature: function
+contains: __builtin__.map
+ */
 
 var map = Function(function() {
     if (arguments.length < 2) {
@@ -117,6 +167,11 @@ var map = Function(function() {
     else
         return items;
 });
+
+/*
+requires_feature: function
+contains: __builtin__.zip
+ */
 
 var zip = Function(function() {
     if (!arguments.length) {
@@ -153,6 +208,11 @@ var zip = Function(function() {
     }
 });
 
+/*
+requires_feature: function
+contains: __builtin__.isinstance
+ */
+
 var isinstance = Function(function(obj, cls) {
     if (cls.__class__ == tuple) {
         var length = cls.__len__();
@@ -181,6 +241,11 @@ var isinstance = Function(function(obj, cls) {
     };
 });
 
+
+/*
+contains_feature: bool
+ */
+
 py_builtins.bool = function(a) {
     if ((a != null) && defined(a.__bool__)) {
         return a.__bool__();
@@ -193,6 +258,10 @@ py_builtins.bool = function(a) {
     }
 };
 
+/*
+contains_feature: eq
+ */
+
 py_builtins.eq = function(a, b) {
     if ((a != null) && defined(a.__eq__))
         return a.__eq__(b);
@@ -202,6 +271,10 @@ py_builtins.eq = function(a, b) {
         return bool.__call__(a == b);
 };
 
+/*
+requires_feature: function
+contains_feature: _int
+ */
 py_builtins._int = Function(function(value) {
     if (typeof(value) === "number") {
         return _int.__call__(parseInt(value));
@@ -219,6 +292,11 @@ py_builtins._int = Function(function(value) {
     }
 });
 
+/*
+requires_feature: function
+contains_feature: __not__
+ */
+
 py_builtins.__not__ = Function(function(obj) {
    if (hasattr(obj, '__nonzero__')) {
        return py_builtins.bool(!js(obj.__nonzero__()));
@@ -229,9 +307,19 @@ py_builtins.__not__ = Function(function(obj) {
    }
 });
 
+/*
+requires_feature: function
+contains_feature: __is__
+ */
+
 py_builtins.__is__ = Function(function(a, b) {
     return py_builtins.bool(a === b);
 });
+
+/*
+requires_feature: function
+contains_feature: _float
+ */
 
 py_builtins._float = Function(function(value) {
     if (typeof(value) === "number") {
@@ -250,6 +338,11 @@ py_builtins._float = Function(function(value) {
     }
 });
 
+/*
+requires_feature: function
+contains_feature: max
+ */
+
 py_builtins.max = Function(function(list) {
     if (len(list) == 0)
         throw py_builtins.ValueError.__call__("max() arg is an empty sequence");
@@ -264,6 +357,11 @@ py_builtins.max = Function(function(list) {
         return result;
     }
 });
+
+/*
+requires_feature: function
+contains_feature: min
+ */
 
 py_builtins.min = Function(function(list) {
     if (len(list) == 0)
@@ -280,6 +378,11 @@ py_builtins.min = Function(function(list) {
     }
 });
 
+/*
+requires_feature: function
+contains_feature: sum
+ */
+
 py_builtins.sum = Function(function(list) {
     var result = 0;
 
@@ -289,6 +392,10 @@ py_builtins.sum = Function(function(list) {
 
     return result;
 });
+
+/*
+contains_feature: print
+ */
 
 py_builtins.print = function(s) {
     if (typeof(console) != "undefined" && defined(console.log)) {
@@ -307,6 +414,11 @@ py_builtins.print = function(s) {
     }
 };
 
+/*
+requires_feature: function
+contains_feature: filter
+ */
+
 py_builtins.filter = Function(function(f, l) {
    res = list.__call__();
    iterate(iter.__call__(l), function(item) {
@@ -316,6 +428,11 @@ py_builtins.filter = Function(function(f, l) {
    });
    return res;
 });
+
+/*
+requires_feature: function
+contains_feature: reduce
+ */
 
 py_builtins.reduce = Function(function(func, seq) {
     var initial;
