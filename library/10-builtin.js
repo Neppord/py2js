@@ -2,6 +2,7 @@
 
 /*
 requires: $function$
+requires: $defined$
 contains: __builtin__.hasattr
  */
 
@@ -11,6 +12,8 @@ var hasattr = Function(function(obj, name) {
 
 /*
 requires: $function$
+requires: $defined$
+requires: __builtin__.AttributeError
 contains: __builtin__.getattr
  */
 
@@ -39,6 +42,7 @@ var setattr = Function(function(obj, name, value) {
 
 /*
 requires: $function$
+requires: __builtin__.AttributeError
 contains: __builtin__.hash
  */
 
@@ -54,6 +58,7 @@ var hash = Function(function(obj) {
 
 /*
 requires: $function$
+requires: __builtin__.AttributeError
 contains: __builtin__.len
  */
 
@@ -67,6 +72,7 @@ var len = Function(function(obj) {
 
 /*
 requires: $function$
+requires: __builtin__.list
 contains: __builtin__.dir
  */
 
@@ -80,6 +86,7 @@ var dir = Function(function(obj) {
 
 /*
 requires: $function$
+requires: __builtin__.AttributeError
 contains: __builtin__.repr
  */
 
@@ -99,6 +106,9 @@ var repr = Function(function(obj) {
 
 /*
 requires: $function$
+requires: $defined$
+requires: $js$
+requires: __builtin__.iter
 contains: __builtin__.range
  */
 
@@ -132,6 +142,8 @@ var range = Function(function(start, end, step) {
 
 /*
 requires: $function$
+requires: __builtin__.iter
+requires: __builtin__.range
 contains: __builtin__.xrange
  */
 
@@ -141,6 +153,12 @@ var xrange = Function(function(start, end, step) {
 
 /*
 requires: $function$
+requires: $iterate$
+requires: __builtin__.TypeError
+requires: __builtin__.NotImplementedError
+requires: __builtin__.iter
+requires: __builtin__.list
+
 contains: __builtin__.map
  */
 
@@ -170,6 +188,10 @@ var map = Function(function() {
 
 /*
 requires: $function$
+requires: __builtin__.iter
+requires: __builtin__.list
+requires: __builtin__.isinstance
+
 contains: __builtin__.zip
  */
 
@@ -210,6 +232,7 @@ var zip = Function(function() {
 
 /*
 requires: $function$
+
 contains: __builtin__.isinstance
  */
 
@@ -243,6 +266,8 @@ var isinstance = Function(function(obj, cls) {
 
 
 /*
+requires: $defined$
+
 contains: bool
  */
 
@@ -259,7 +284,9 @@ py_builtins.bool = function(a) {
 };
 
 /*
-contains: eq
+requires: $defined$
+
+contains: $eq$
  */
 
 py_builtins.eq = function(a, b) {
@@ -273,7 +300,9 @@ py_builtins.eq = function(a, b) {
 
 /*
 requires: $function$
-contains: _int
+requires: __builtin__.isinstance
+
+contains: $_int$
  */
 py_builtins._int = Function(function(value) {
     if (typeof(value) === "number") {
@@ -294,7 +323,9 @@ py_builtins._int = Function(function(value) {
 
 /*
 requires: $function$
-contains: __not__
+requires: __builtin__.bool
+requires: __builtin__.TypeError
+contains: $__not__$
  */
 
 py_builtins.__not__ = Function(function(obj) {
@@ -309,6 +340,8 @@ py_builtins.__not__ = Function(function(obj) {
 
 /*
 requires: $function$
+requires: __builtin__.bool
+
 contains: __is__
  */
 
@@ -318,7 +351,10 @@ py_builtins.__is__ = Function(function(a, b) {
 
 /*
 requires: $function$
-contains: _float
+requires: __builtin__.ValueError
+requires: __builtin__.isinstance
+
+contains: $_float$
  */
 
 py_builtins._float = Function(function(value) {
@@ -340,7 +376,12 @@ py_builtins._float = Function(function(value) {
 
 /*
 requires: $function$
-contains: max
+requires: $iterate$
+
+requires: __builtin__.ValueError
+requires: __builtin__.iter
+
+contains: __builtin__.max
  */
 
 py_builtins.max = Function(function(list) {
@@ -360,7 +401,12 @@ py_builtins.max = Function(function(list) {
 
 /*
 requires: $function$
-contains: min
+requires: $iterate$
+
+requires: __builtin__.ValueError
+requires: __builtin__.iter
+
+contains: __builtin__.min
  */
 
 py_builtins.min = Function(function(list) {
@@ -380,7 +426,11 @@ py_builtins.min = Function(function(list) {
 
 /*
 requires: $function$
-contains: sum
+requires: $iterate$
+
+requires: __builtin__.iter
+
+contains: __builtin__.sum
  */
 
 py_builtins.sum = Function(function(list) {
@@ -394,7 +444,8 @@ py_builtins.sum = Function(function(list) {
 });
 
 /*
-contains: print
+requires: $defined$
+contains: $print$
  */
 
 py_builtins.print = function(s) {
@@ -416,6 +467,12 @@ py_builtins.print = function(s) {
 
 /*
 requires: $function$
+requires: $iterate$
+
+requires: __builtin__.list
+requires: __builtin__.iter
+requires: __builtin__.bool
+
 contains: filter
  */
 

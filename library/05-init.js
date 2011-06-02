@@ -11,16 +11,26 @@ var py_builtins = {};
 py_builtins.__python3__ = false;
 
 /* JavaScript helper functions */
-
+/*
+contains: $defined$
+ */
 function defined(obj) {
     return typeof(obj) != 'undefined';
 }
+
+/*
+contains: $assert$
+*/
 
 function assert(cond, msg) {
     if (!cond) {
         throw py_builtins.AssertionError.__call__(msg);
     }
 }
+
+/*
+contains: $iterate$
+*/
 
 function iterate(seq, func) {
     while (true) {
@@ -35,6 +45,10 @@ function iterate(seq, func) {
         }
     }
 }
+
+/*
+contains: $copy$
+*/
 
 function copy(iterator) {
     var items = [];
