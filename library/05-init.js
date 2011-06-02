@@ -47,7 +47,7 @@ function copy(iterator) {
 }
 
 /*
-contains_feature: function
+contains: $function$
  */
 
 var Function = function(func) {
@@ -56,7 +56,7 @@ var Function = function(func) {
 };
 
 /*
-require_feature: function
+require: $function$
  */
 
 var js = Function(function(obj) {

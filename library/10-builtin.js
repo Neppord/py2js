@@ -1,7 +1,7 @@
 /* Python built-in functions */
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.hasattr
  */
 
@@ -10,7 +10,7 @@ var hasattr = Function(function(obj, name) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.getattr
  */
 
@@ -29,7 +29,7 @@ var getattr = Function(function(obj, name, value) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.setattr
  */
 
@@ -38,7 +38,7 @@ var setattr = Function(function(obj, name, value) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.hash
  */
 
@@ -53,7 +53,7 @@ var hash = Function(function(obj) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.len
  */
 
@@ -66,7 +66,7 @@ var len = Function(function(obj) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.dir
  */
 
@@ -79,7 +79,7 @@ var dir = Function(function(obj) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.repr
  */
 
@@ -98,7 +98,7 @@ var repr = Function(function(obj) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.range
  */
 
@@ -131,7 +131,7 @@ var range = Function(function(start, end, step) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.xrange
  */
 
@@ -140,7 +140,7 @@ var xrange = Function(function(start, end, step) {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.map
  */
 
@@ -169,7 +169,7 @@ var map = Function(function() {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.zip
  */
 
@@ -209,7 +209,7 @@ var zip = Function(function() {
 });
 
 /*
-requires_feature: function
+requires: $function$
 contains: __builtin__.isinstance
  */
 
@@ -243,7 +243,7 @@ var isinstance = Function(function(obj, cls) {
 
 
 /*
-contains_feature: bool
+contains: bool
  */
 
 py_builtins.bool = function(a) {
@@ -259,7 +259,7 @@ py_builtins.bool = function(a) {
 };
 
 /*
-contains_feature: eq
+contains: eq
  */
 
 py_builtins.eq = function(a, b) {
@@ -272,8 +272,8 @@ py_builtins.eq = function(a, b) {
 };
 
 /*
-requires_feature: function
-contains_feature: _int
+requires: $function$
+contains: _int
  */
 py_builtins._int = Function(function(value) {
     if (typeof(value) === "number") {
@@ -293,8 +293,8 @@ py_builtins._int = Function(function(value) {
 });
 
 /*
-requires_feature: function
-contains_feature: __not__
+requires: $function$
+contains: __not__
  */
 
 py_builtins.__not__ = Function(function(obj) {
@@ -308,8 +308,8 @@ py_builtins.__not__ = Function(function(obj) {
 });
 
 /*
-requires_feature: function
-contains_feature: __is__
+requires: $function$
+contains: __is__
  */
 
 py_builtins.__is__ = Function(function(a, b) {
@@ -317,8 +317,8 @@ py_builtins.__is__ = Function(function(a, b) {
 });
 
 /*
-requires_feature: function
-contains_feature: _float
+requires: $function$
+contains: _float
  */
 
 py_builtins._float = Function(function(value) {
@@ -339,8 +339,8 @@ py_builtins._float = Function(function(value) {
 });
 
 /*
-requires_feature: function
-contains_feature: max
+requires: $function$
+contains: max
  */
 
 py_builtins.max = Function(function(list) {
@@ -359,8 +359,8 @@ py_builtins.max = Function(function(list) {
 });
 
 /*
-requires_feature: function
-contains_feature: min
+requires: $function$
+contains: min
  */
 
 py_builtins.min = Function(function(list) {
@@ -379,8 +379,8 @@ py_builtins.min = Function(function(list) {
 });
 
 /*
-requires_feature: function
-contains_feature: sum
+requires: $function$
+contains: sum
  */
 
 py_builtins.sum = Function(function(list) {
@@ -394,7 +394,7 @@ py_builtins.sum = Function(function(list) {
 });
 
 /*
-contains_feature: print
+contains: print
  */
 
 py_builtins.print = function(s) {
@@ -415,8 +415,8 @@ py_builtins.print = function(s) {
 };
 
 /*
-requires_feature: function
-contains_feature: filter
+requires: $function$
+contains: filter
  */
 
 py_builtins.filter = Function(function(f, l) {
@@ -430,8 +430,8 @@ py_builtins.filter = Function(function(f, l) {
 });
 
 /*
-requires_feature: function
-contains_feature: reduce
+requires: $function$
+contains: reduce
  */
 
 py_builtins.reduce = Function(function(func, seq) {
