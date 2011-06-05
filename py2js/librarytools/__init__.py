@@ -84,7 +84,7 @@ def require(contains):
     requires = map(lambda item:item[0], cursor.fetchall())
     close_db(db, cursor)
 
-    return requires
+    return requires + [contains]
 
 def allrequire(contains):
     """
@@ -125,7 +125,7 @@ def create_runtime(requires):
     cursor.close()
 
     contents = []
-    for file_name, in contains_files:
+    for file_name, in sorted(contains_files):
         contents.append(file(file_name, "rb").read())
     return "\n/*new file*/\n".join(contents)
 
