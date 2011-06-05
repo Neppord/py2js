@@ -1,5 +1,9 @@
 /* Python 'bool' type */
 
+/*
+contains: __builtin__.bool
+*/
+
 var bool = __inherit(object, "bool");
 
 bool.prototype.__init__ = function(b) {

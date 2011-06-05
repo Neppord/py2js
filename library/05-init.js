@@ -70,7 +70,8 @@ var Function = function(func) {
 };
 
 /*
-require: $function$
+contains: $js$
+requires: $function$
  */
 
 var js = Function(function(obj) {

@@ -1,5 +1,7 @@
 /* Python 'iter' type */
-
+/*
+contains: __builtin__.iter
+ */
 var iter = __inherit(object, "iter");
 
 iter.prototype.__init__ = function(obj) {

@@ -17,7 +17,18 @@ Exception.prototype.__str__ = function() {
 Exception.prototype.toString = function() {
     return js(this.__str__());
 };
-
+/*
+contains: __builtin__.NotImplementedError
+contains: __builtin__.ZeroDivisionError
+contains: __builtin__.AssertionError
+contains: __builtin__.AttributeError
+contains: __builtin__.TypeError
+contains: __builtin__.ValueError
+contains: __builtin__.NameError
+contains: __builtin__.IndexError
+contains: __builtin__.KeyError
+contains: __builtin__.StopIteration
+*/
 py_builtins.__exceptions__ = [
     'NotImplementedError',
     'ZeroDivisionError',

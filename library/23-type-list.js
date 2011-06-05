@@ -1,5 +1,8 @@
 /* Python 'list' type */
 
+/*
+contains: __builtin__.list
+ */
 var list = __inherit(object, "list");
 
 list.prototype.__init__ = tuple.prototype.__init__;
