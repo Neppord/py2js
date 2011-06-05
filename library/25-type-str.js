@@ -1,4 +1,22 @@
 /* Python 'str' type */
+/*
+requires: $defined$
+requires: $function$
+requires: $class$
+requires: $js$
+
+requires: __builtin__.int
+requires: __builtin__.iter
+requires: __builtin__.tuple
+requires: __builtin__.bool
+requires: __builtin__.isinstance
+requires: __builtin__.IndexError
+requires: __builtin__.TypeError
+requires: __builtin__.ValueError
+requires: __builtin__.list
+
+contains: __builtin__.str
+*/
 
 var str = __inherit(object, "str");
 

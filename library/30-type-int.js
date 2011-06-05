@@ -1,4 +1,11 @@
 /* Python 'int' type */
+/*
+requires: __builtin__.TypeError
+requires: __builtin__.ZeroDivisionError
+requires: __builtin__.float
+
+contains: __builtin__.int
+*/
 
 var _int = __inherit(number, "int");
 

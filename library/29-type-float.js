@@ -1,5 +1,13 @@
 /* Python 'float' type */
 
+/*
+requires: __builtin__.str
+requires: __builtin__.TypeError
+requires: __builtin__.ZeroDivisionError
+
+contains: __builtin__.float
+*/
+
 var _float = __inherit(number, "float");
 
 var __py2js_float = _float;

@@ -1,3 +1,12 @@
+/*
+requires: $js$ 
+requires: $function$ 
+requires: $defined$ 
+
+requires: __builtin__.TypeError
+
+contains: $class$
+*/
 var ObjectMetaClass = function(cls) {
 
     this.__call__ = function() {
@@ -54,6 +63,15 @@ var __inherit = function(cls, name) {
 var __super = Function(function(scls, obj) {
     return obj.__super__;
 });
+
+/*
+requires: $class$
+requires: $js$
+
+requires: __builtin__.str
+
+contains: __builtin__.object
+*/
 
 var object = __inherit(function() {}, "object");
 

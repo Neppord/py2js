@@ -1,5 +1,9 @@
 /* Python 'tuple' type */
 
+/*
+contains: __builtin__.tuple
+*/
+
 var tuple = __inherit(object, "tuple");
 
 tuple.prototype.__init__ = function(seq) {
