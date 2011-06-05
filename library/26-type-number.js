@@ -1,5 +1,11 @@
 /* Python 'number' type */
 
+/*
+requiers: $class$
+
+contains: $number$
+ */
+
 var number = __inherit(object, "int");
 
 var __py2js_number = number;

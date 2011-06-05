@@ -1,6 +1,7 @@
 /* Python 'list' type */
 
 /*
+requires: __builtin__.slice
 contains: __builtin__.list
  */
 var list = __inherit(object, "list");

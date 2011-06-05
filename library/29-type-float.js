@@ -1,6 +1,8 @@
 /* Python 'float' type */
 
 /*
+requires: $number$
+
 requires: __builtin__.str
 requires: __builtin__.TypeError
 requires: __builtin__.ZeroDivisionError

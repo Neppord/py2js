@@ -1,5 +1,11 @@
 /* Python 'dict' type */
+/*
+requires: $class$
 
+requires: __builtin__.slice
+
+contains: __builtin__.dict
+*/
 var dict = __inherit(object, "dict");
 
 dict.prototype.__init__ = function(args) {

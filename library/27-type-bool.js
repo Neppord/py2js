@@ -2,6 +2,8 @@
 
 /*
 contains: __builtin__.bool
+contains: __builtin__.True
+contains: __builtin__.False
 */
 
 var bool = __inherit(object, "bool");

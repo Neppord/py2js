@@ -6,7 +6,7 @@ requires: __builtin__.list
 requires: __builtin__.iter
 requires: __builtin__.bool
 
-contains: filter
+contains: __builtin__.filter
  */
 
 py_builtins.filter = Function(function(f, l) {
@@ -21,7 +21,7 @@ py_builtins.filter = Function(function(f, l) {
 
 /*
 requires: $function$
-contains: reduce
+contains: __builtin__.reduce
  */
 
 py_builtins.reduce = Function(function(func, seq) {

@@ -1,6 +1,7 @@
 /* Python 'tuple' type */
 
 /*
+requires: __builtin__.slice
 contains: __builtin__.tuple
 */
 

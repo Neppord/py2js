@@ -1,4 +1,15 @@
 /* Python 'slice' object */
+/*
+requires: $defined$
+requires: $function$
+requires: $js$
+
+requires: __builtin__.str
+requires: __builtin__.tuple
+
+contains: $slice$
+contains: __builtin__.slice
+*/
 
 var slice = __inherit(object, "slice");
 

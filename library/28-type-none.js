@@ -1,4 +1,7 @@
 /* Python 'none' type */
+/*
+contains: __builtin__.None
+*/
 
 var none = __inherit(object, "none");
 
