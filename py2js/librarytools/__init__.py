@@ -78,6 +78,8 @@ def require(contains):
 
     cursor.execute("SELECT file FROM contains WHERE argument = ? ", (contains, ))
     file_name = cursor.fetchone() # returns a tuple
+    if not file_name:
+        raise ValueError("No file contains:" + contains)
     cursor.execute("SELECT DISTINCT argument FROM requires WHERE file = ?", file_name)
     requires = map(lambda item:item[0], cursor.fetchall())
     close_db(db, cursor)
@@ -109,28 +111,22 @@ def create_runtime(requires):
 
     db, cursor = open_db()
 
-    contains = []
-    
-    cursor.execute(
-            (
-                "SELECT file "
+    requires_list = sum((allrequire(req) for req in requires), [])
+    command = (
+                "SELECT DISTINCT file "
                 "FROM contains "
-                "WHERE argument IN (?)"),
-            (
-                ",".join(requires)
-                )
-            )
+                "WHERE argument IN (" 
+                ) + ",".join("'"+s+"'" for s in requires_list) + ")"
+    
+    cursor.execute(command)
     contains_files = cursor.fetchall()
-
-    file_names = []
 
     db.commit()
     cursor.close()
 
-
     contents = []
-    for file_name in file_names:
-        contents += file(file_name, "rb").read()
+    for file_name, in contains_files:
+        contents.append(file(file_name, "rb").read())
     return "\n/*new file*/\n".join(contents)
 
 def list_builtins():
@@ -155,11 +151,15 @@ def list_builtins():
         return map(lambda name: ".".join(name[0].split(".")[1:]), ret)
     else:
         return []
-update_db()
-import pprint
-print "list_bilitins():"
-pprint.pprint(list_builtins())
-print "require('__builtin__.zip'):"
-pprint.pprint(require('__builtin__.zip'))
-print "allrequire('__builtin__.zip':"
-pprint.pprint(allrequire('__builtin__.zip'))
+if __name__ == "__main__":
+    update_db()
+    req = "__builtin__.zip"
+    import pprint
+    print "list_bilitins():"
+    pprint.pprint(list_builtins())
+    print "require('" + req + "'):"
+    pprint.pprint(require(req))
+    print "allrequire(' + req + '):"
+    pprint.pprint(allrequire(req))
+    print "create_runtime([req]).count('\n') + 1:"
+    print (create_runtime([req])).count('\n') + 1
