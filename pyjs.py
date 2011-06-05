@@ -4,6 +4,7 @@ import sys
 import os.path
 from optparse import OptionParser
 from py2js import Compiler
+from py2js import librarytools
 
 def main():
     parser = OptionParser(usage="%prog [options] filename",
@@ -25,6 +26,16 @@ def main():
                       dest="import_builtins",
                       default=False,
                       help="call load('py-builtins.js') to source the standard library")
+    parser.add_option("-a", "--auto-link",
+                      action="store_true",
+                      dest="auto_link",
+                      default=False,
+                      help=(
+                          "asks the compiler for required library, "
+                          "and include them"
+                          )
+                      )
+
 
     options, args = parser.parse_args()
     if len(args) == 1:
@@ -46,6 +57,11 @@ def main():
 
         c = Compiler()
         c.append_string(open(filename).read())
+        if options.auto_link:
+            librarytools.update_db()
+            requires = c.requires
+            runtime = librarytools.create_runtime(requires)
+            output.write(runtime + "\n")
         output.write(str(c))
     else:
         parser.print_help()

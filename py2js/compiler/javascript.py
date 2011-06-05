@@ -40,6 +40,17 @@ class Compiler(py2js.compiler.BaseCompiler):
             'IsNot' : "is not", # Not implemented yet
     }
 
+    def __init__(self):
+        super(Compiler, self).__init__()
+
+        self.__requires = set()
+
+    def get_requires(self):
+        return self.__requires
+
+    def add_requires(self, req):
+        self.__requires.add(req)
+
     def get_bool_op(self, node):
         return self.bool_op[node.op.__class__.__name__]
 
@@ -56,6 +67,7 @@ class Compiler(py2js.compiler.BaseCompiler):
         name = self.name_map.get(node.id, node.id)
 
         if (name in self.builtin) and not (name in self._scope):
+            self.add_reqires("__builtin__." + name)
             name = "py_builtins." + name
 
         return name
@@ -239,6 +251,7 @@ class Compiler(py2js.compiler.BaseCompiler):
 
     def visit_BinOp(self, node):
         if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Str):
+            self.add_requires("$vsprintf$")
             left = self.visit(node.left)
             if isinstance(node.right, (ast.Tuple, ast.List)):
                 right = self.visit(node.right)
@@ -273,9 +286,12 @@ class Compiler(py2js.compiler.BaseCompiler):
             return "%s %s %s" % (self.visit(node.left), self.get_comparison_op(op), self.visit(comp))
 
     def visit_Num(self, node):
+        self.add_requires("__builtin__.int")
+        self.add_requires("__builtin__.float")
         return str(node.n)
 
     def visit_Str(self, node):
+        self.add_requires("__builtin__.str")
         # Uses the Python builtin repr() of a string and the strip string type
         # from it. This is to ensure Javascriptness, even when they use things
         # like b"\\x00" or u"\\u0000".
@@ -312,10 +328,12 @@ class Compiler(py2js.compiler.BaseCompiler):
         return "%s.%s" % (self.visit(node.value), node.attr)
 
     def visit_Tuple(self, node):
+        self.add_requires("__builtin__.tuple")
         els = [self.visit(e) for e in node.elts]
         return "[%s]" % (", ".join(els))
 
     def visit_Dict(self, node):
+        self.add_requires("__builtin__.dict")
         els = []
         for k, v in zip(node.keys, node.values):
             if isinstance(k, ast.Name):
@@ -325,10 +343,12 @@ class Compiler(py2js.compiler.BaseCompiler):
         return "{%s}" % (", ".join(els))
 
     def visit_List(self, node):
+        self.add_requires("__builtin__.list")
         els = [self.visit(e) for e in node.elts]
         return "[%s]" % (", ".join(els))
 
     def visit_Slice(self, node):
+        self.add_requires("$slice$")
         if node.step:
             raise JSError("Javascript does not support slicing in steps")
 

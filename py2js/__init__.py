@@ -38,7 +38,10 @@ class Compiler(object):
         self.compiler = py2js.compiler.multiplexer.Compiler(jsvars)
         self.buffer = None
         self.reset()
-        self.requires = []
+
+    @property
+    def requires(self):
+        return self.compiler.get_requires()
 
     def reset(self):
         self.buffer = StringIO.StringIO()

@@ -45,13 +45,28 @@ class Compiler(py2js.compiler.BaseCompiler):
 
     def __init__(self):
         super(Compiler, self).__init__()
+        self.__requires = set()
         self.future_division = False
+
+    def get_requires(self):
+        return self.__requires
+
+    def add_requires(self, req):
+        self.__requires.add(req)
 
     def visit_Name(self, node):
         name = self.name_map.get(node.id, node.id)
 
-        if (name in self.builtin) and not (name in self._scope):
-            name = "py_builtins." + name
+        if name not in self._scope:
+            if (name in self.builtin):
+                self.add_requires("__builtin__." + node.id)
+                name = "py_builtins." + name
+            elif name == "None":
+                self.add_requires("__builtin__.None")
+            elif name == "True":
+                self.add_requires("__builtin__.True")
+            elif name == "False":
+                self.add_requires("__builtin__.False")
 
         return name
 
@@ -60,6 +75,9 @@ class Compiler(py2js.compiler.BaseCompiler):
         return []
 
     def visit_FunctionDef(self, node):
+        self.add_requires("$function$")
+        self.add_requires("__builtin__.tuple")
+        self.add_requires("__builtin__.dict")
         is_static = False
         is_javascript = False
         if node.decorator_list:
@@ -410,6 +428,7 @@ class Compiler(py2js.compiler.BaseCompiler):
 
     def visit_BinOp(self, node):
         if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Str):
+            self.add_requires("$vsprintf$")
             left = self.visit(node.left)
             if isinstance(node.right, (ast.Tuple, ast.List)):
                 right = self.visit(node.right)
@@ -450,6 +469,8 @@ class Compiler(py2js.compiler.BaseCompiler):
             raise JSError("Unknown comparison type %s" % node.ops[0])
 
     def visit_Num(self, node):
+        self.add_requires("__builtin__.int")
+        self.add_requires("__builtin__.float")
         if isinstance(node.n, int):
             if (0 <= node.n <= 9):
                 return "$c%s" % str(node.n)
@@ -461,6 +482,7 @@ class Compiler(py2js.compiler.BaseCompiler):
             raise JSError("Unknown numeric type")
 
     def visit_Str(self, node):
+        self.add_requires("__builtin__.str")
         # Uses the Python builtin repr() of a string and the strip string type
         # from it. This is to ensure Javascriptness, even when they use things
         # like b"\\x00" or u"\\u0000".
@@ -505,10 +527,12 @@ class Compiler(py2js.compiler.BaseCompiler):
         return """%s.__getattr__("%s")""" % (self.visit(node.value), node.attr)
 
     def visit_Tuple(self, node):
+        self.add_requires("__builtin__.tuple")
         els = [self.visit(e) for e in node.elts]
         return "tuple.__call__([%s])" % (", ".join(els))
 
     def visit_Dict(self, node):
+        self.add_requires("__builtin__.dict")
         els = []
         for k, v in zip(node.keys, node.values):
             if isinstance(k, ast.Name):
@@ -518,10 +542,12 @@ class Compiler(py2js.compiler.BaseCompiler):
         return "dict.__call__(tuple.__call__([%s]))" % (",\n".join(els))
 
     def visit_List(self, node):
+        self.add_requires("__builtin__.list")
         els = [self.visit(e) for e in node.elts]
         return "list.__call__([%s])" % (", ".join(els))
 
     def visit_ListComp(self, node):
+        self.add_requires("__builtin__.list")
         if not len(node.generators) == 1:
             raise JSError("Compound list comprehension not supported")
         if not isinstance(node.generators[0].target, ast.Name):
@@ -538,6 +564,8 @@ class Compiler(py2js.compiler.BaseCompiler):
         return "map.__call__(function(%s) {return %s;}, %s)" % (node.generators[0].target.id, self.visit(node.elt), self.visit(node.generators[0].iter))
 
     def visit_Slice(self, node):
+        self.add_requires("$slice$")
+
         if node.lower and node.upper and node.step:
             return "slice.__call__(%s, %s, %s)" % (self.visit(node.lower),
                     self.visit(node.upper), self.visit(node.step))

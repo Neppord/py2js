@@ -38,7 +38,10 @@ class BaseCompiler(object):
     ])
 
     def __init__(self):
+        # Required field for the linker
+
         self.index_var = 0
+        
         # This is the name of the classes that we are currently in:
         self._class_name = []
 
@@ -46,6 +49,12 @@ class BaseCompiler(object):
         self._scope = []
         self._classes = {}
         self._exceptions = []
+    
+    def get_requires(self):
+        raise NotImplementedError()
+
+    def add_requires(self, req):
+        raise NotImplementedError()
 
     def alloc_var(self):
         self.index_var += 1
@@ -92,6 +101,7 @@ class BaseCompiler(object):
         assert node.nl
         values = [self.visit(v) for v in node.values]
         values = ", ".join(values)
+        self.add_requires("$print$")
         return ["py_builtins.print(%s);" % values]
 
     def visit_Module(self, node):

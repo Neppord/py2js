@@ -46,7 +46,18 @@ class Compiler(py2js.compiler.BaseCompiler):
         else:
             self.jsvars = []
 
+        self.__requires = set(["__builtin__"])
+
         self.enter("py")
+
+    def get_requires(self):
+        return (
+                self.__requires | 
+                self.comp_py.get_requires() |
+                self.comp_js.get_requires()
+                )
+    def add_requires(self, req):
+        self.__requires.add(req)
 
     def enter(self, mode):
         self.modestack.append(mode)
@@ -112,6 +123,9 @@ class Compiler(py2js.compiler.BaseCompiler):
         return self.visit(node, False)
 
     def visit_FunctionDef(self, node):
+        self.add_requires("$function$")
+        self.add_requires("__builtin__.tuple")
+        self.add_requires("__builtin__.dict")
         added = 0
         dec = node.decorator_list
         i = 0
