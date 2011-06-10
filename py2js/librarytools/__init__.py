@@ -43,21 +43,44 @@ def close_db(db, cursor):
     db.commit()
     cursor.close()
 
+def init_db():
+    """
+        Run a check to see if the database needs updating and do it if needed.
+    """
+    
+    if not os.path.exists(DB_FILE):
+        return update_db()
+
+    lib_age = os.stat(DB_FILE).st_mtime
+
+    for file_name in __get_lib_files():
+        if lib_age < os.stat(file_name).st_mtime:
+            return update_db()
+    return
+
+def __get_lib_files():
+
+    js_files = []
+    for directory in LIBRARY_DIRS: 
+        js_files += glob.glob(directory + "\*.js")
+    return js_files
+
+
+
 def update_db():
     """
     Search the LIBRARY_DIRS for files with tags, and creating DB_FILE. This 
     function should only be called if you suspect that the DB_FILE is outdated.
     """
-    os.remove(DB_FILE)
+    if os.path.exists(DB_FILE):
+        os.remove(DB_FILE)
     db, cursor = open_db()
     cursor.execute(CREATE_REQUIRES)
     cursor.execute(CREATE_CONTAINS)
     cursor.execute(CREATE_FILES)
 
     # searching for all files that we should build our db from
-    js_files = []
-    for directory in LIBRARY_DIRS: 
-        js_files += glob.glob(directory + "\*.js")
+    js_files = __get_lib_files()
 
     # look for tags
     for js_file in js_files:
@@ -151,8 +174,9 @@ def list_builtins():
         return map(lambda name: ".".join(name[0].split(".")[1:]), ret)
     else:
         return []
+
 if __name__ == "__main__":
-    update_db()
+    init_db()
     req = "__builtin__.zip"
     import pprint
     print "list_bilitins():"

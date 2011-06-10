@@ -58,7 +58,7 @@ def main():
         c = Compiler()
         c.append_string(open(filename).read())
         if options.auto_link:
-            librarytools.update_db()
+            librarytools.init_db()
             requires = c.requires
             runtime = librarytools.create_runtime(requires)
             output.write(runtime + "\n")
