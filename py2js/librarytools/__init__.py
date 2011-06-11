@@ -1,5 +1,5 @@
-# copyright 2011 Samuel Ytterbrink <neppord@gmail.com>
 """
+    copyright 2011 Samuel Ytterbrink <neppord@gmail.com>
     This module contains functions to find and concatenate features and modules
     written in JavaScript located in the JavaScript library directory.
 """
@@ -8,7 +8,6 @@
 # if you use this on the server side of a web application.
 import sqlite3 as db_lib
 
-import glob
 import re
 import os
 import collections
@@ -53,17 +52,31 @@ def init_db():
 
     lib_age = os.stat(DB_FILE).st_mtime
 
-    for file_name in __get_lib_files():
+    for file_name, module_path in get_js_files():
         if lib_age < os.stat(file_name).st_mtime:
             return update_db()
     return
 
-def __get_lib_files():
+def get_js_files():
+    """
+        Returns all JavaScript library filenames and there module path, as a 
+        tuple.
+    """
 
     js_files = []
-    for directory in LIBRARY_DIRS: 
-        js_files += glob.glob(directory + "\*.js")
+    for directory in LIBRARY_DIRS:
+        os.path.walk(directory, __visit,(directory, js_files))
     return js_files
+
+def __visit((root, js_files), dirname, names):
+    """
+        helper function for the get lib file function.
+    """
+    for name in names:
+        path = os.path.join(dirname, name)
+        if name.endswith(".js") and os.path.isfile(path):
+            module_path = os.path.relpath(path, root).replace("/", ".")[:-3]
+            js_files.append((path, module_path))
 
 
 
@@ -80,12 +93,13 @@ def update_db():
     cursor.execute(CREATE_FILES)
 
     # searching for all files that we should build our db from
-    js_files = __get_lib_files()
+    js_files = get_js_files()
 
     # look for tags
-    for js_file in js_files:
+    for js_file, module_path in js_files:
         contents = file(js_file, "rb").read()
         cursor.execute(INSERT_FILE, (js_file,))
+        cursor.execute(INSERT_CONTAINS, (js_file, module_path))
         # add information to DB_FILE
         for arg in re.findall(REQUIRES, contents, re.M):
             cursor.execute(INSERT_REQUIRES,(js_file, arg.strip()))
@@ -187,3 +201,7 @@ if __name__ == "__main__":
     pprint.pprint(allrequire(req))
     print "create_runtime([req]).count('\n') + 1:"
     print (create_runtime([req])).count('\n') + 1
+    db, c = open_db()
+    c.execute("Select * from contains")
+    pprint.pprint(c.fetchall())
+    close_db(db,c)
