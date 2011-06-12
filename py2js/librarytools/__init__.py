@@ -21,6 +21,7 @@ LIBRARY_DIRS = ["library"]
 CREATE_REQUIRES = "CREATE TABLE requires (file text, argument text)"
 CREATE_CONTAINS = "CREATE TABLE contains (file text, argument text)"
 CREATE_FILES = "CREATE TABLE files (file text)"
+CREATE_RUNTIME = "CREATE TABLE runtime (contains text, runtime text)"
 
 
 INSERT_REQUIRES = "INSERT INTO requires VALUES (?, ?)"
@@ -51,6 +52,9 @@ def init_db():
         return update_db()
 
     lib_age = os.stat(DB_FILE).st_mtime
+    
+    if  lib_age < os.stat(__file__).st_mtime:
+        return update_db()
 
     for file_name, module_path in get_js_files():
         if lib_age < os.stat(file_name).st_mtime:
@@ -91,6 +95,7 @@ def update_db():
     cursor.execute(CREATE_REQUIRES)
     cursor.execute(CREATE_CONTAINS)
     cursor.execute(CREATE_FILES)
+    cursor.execute(CREATE_RUNTIME)
 
     # searching for all files that we should build our db from
     js_files = get_js_files()
@@ -148,6 +153,13 @@ def create_runtime(requires):
 
     db, cursor = open_db()
 
+    cursor.execute("SELECT runtime FROM runtime WHERE contains = ?", (str(requires),))
+    
+    runtime = cursor.fetchone()
+
+    if runtime:
+        return runtime[0]
+
     requires_list = sum((allrequire(req) for req in requires), [])
     command = (
                 "SELECT DISTINCT file "
@@ -158,13 +170,16 @@ def create_runtime(requires):
     cursor.execute(command)
     contains_files = cursor.fetchall()
 
-    db.commit()
-    cursor.close()
-
     contents = []
     for file_name, in sorted(contains_files):
         contents.append(file(file_name, "rb").read())
-    return "\n/*new file*/\n".join(contents)
+    runtime = "\n/*new file*/\n".join(contents)
+
+    cursor.execute("INSERT INTO runtime VALUES (?, ?)",(str(requires), runtime))
+
+    close_db(db, cursor)
+
+    return runtime
 
 def list_builtins():
     """
